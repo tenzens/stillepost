@@ -1,0 +1,20 @@
+## Third-Party Libraries
+
+This project uses the following third-party libraries:
+
+- [kong](https://github.com/alecthomas/kong/)
+  - License: MIT License
+  - Copyright (c) [2018] [Alec Thomas]
+
+- [grpc-go](https://github.com/grpc/grpc-go)
+  - License: Apache License
+  - Copyright (c) [2014] [gRPC authors]
+
+- [protobuf-go](https://github.com/protocolbuffers/protobuf-go)
+  - License: BSD 3-Clause
+  - Copyright (c) [2018] [The Go Authors]
+
+- [randstr](https://github.com/thanhpk/randstr)
+  - License: MIT License
+  - Copyright (c) [2018] [thanhpk]
+

@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+option go_package = "stillepost/stillepost_grpc";
+
+// Member and Coordinator RPCs
+// To compile this proto go cd into the directory above stillepost and execute
+// from one level above stillepost directory:
+// protoc --proto_path=stillepost/stillepost_grpc/ --go_out=. --go_opt=paths=import --go-grpc_out=. stillepost/stillepost_grpc/stillepost.proto
+
+// The configuration that the Client tells the coordinator about
+message ClientMemberConfiguration {
+  uint32 message_len = 1;
+  uint32 message_count = 2;
+  bool forward_immediately = 3;
+  uint32 member_timeout = 4;
+}
+
+// The configuration that the coordinator sets on the members
+message MemberConfiguration {
+  string next_member = 1;
+  bool is_origin = 2;
+  ClientMemberConfiguration client_member_configuration = 3;
+}
+
+message MemberConfigurationResult {
+
+}
+
+message StillepostOriginResult {
+  uint64 time = 1;
+}
+
+message GetPeerEndpointParams {
+
+}
+
+message GetPeerEndpointResult {
+  string peer_endpoint = 1;
+}
+
+message StillepostCoordinatorParams {
+
+}
+
+message RundgangConfiguration {
+  string rundgangId = 1;
+}
+
+message RundgangConfigurationResult {
+
+}
+
+
+/* Service between a Member and Coordinator
+ * Methods:
+ * GetPeerEndpoint retrieves the peer endpoint of the member
+ * ConfigureMember configures the member e.g. sets the next member, sets the parameters of the roundtrip message
+ * ConfigureRundgang sets Rundgang-specific attributes on the member (here the rundgangId, which is new for every Stillepost)
+ * Stillepost starts a Stillepost on that member (the origin of the ring); Doesnt return until the messages have gone around
+ */
+service StillepostMember {
+  rpc GetPeerEndpoint(GetPeerEndpointParams) returns (GetPeerEndpointResult) {}
+  rpc ConfigureMember(MemberConfiguration) returns (MemberConfigurationResult) {}
+  rpc ConfigureRundgang(RundgangConfiguration) returns (RundgangConfigurationResult) {}
+  rpc Stillepost(StillepostCoordinatorParams) returns (StillepostOriginResult) {} //To actually only start the Stillepost
+}
+
+//Coordinator and Client RPCs
+message StillepostResult {
+  uint64 time = 1;
+}
+
+message StillepostClientParams {
+
+}
+
+message ClientRingConfiguration {
+  string cluster = 1;
+  ClientMemberConfiguration client_member_config = 2;
+}
+
+message ClientRingConfigurationResult {
+
+}
+
+message ClientPingParams {
+  string cluster = 1;
+}
+
+message ClientPingResult {
+  string results = 1;
+}
+/* Service between Coordinator and Client
+ * Methods:
+ * ConfigureRing configures the settings of the ring (cluster, the amount of messages, the size of each message)
+ * Stillepost starts a stillepost and doesn't return until it finishes
+ */
+service StillepostCoordinator {
+  rpc ConfigureRing(ClientRingConfiguration) returns (ClientRingConfigurationResult) {}
+  rpc Stillepost(StillepostClientParams) returns (StillepostResult) {}
+  rpc PingAllSystems(ClientPingParams) returns (ClientPingResult) {}
+}
